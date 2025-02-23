@@ -1,28 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net6.0;net8.0;net9.0;netstandard2.0;netstandard2.1</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <LangVersion>12.0</LangVersion>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <Version>0.5.1</Version>
-        <Description>Auto gen dispose pattern</Description>
-        <RepositoryUrl>https://github.com/2A5F/Coplt.Dropping</RepositoryUrl>
-        <PackageTags>roslyn analyzers;dispose;source generator</PackageTags>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <LangVersion>10.0</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Coplt.Dropping.Analyzers\Coplt.Dropping.Analyzers.csproj" ReferenceOutputAssembly="false" PrivateAssets="all"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="..\LICENSE.md" Pack="true" PackagePath="\"/>
-        <None Include="..\README.md" Pack="true" PackagePath="\"/>
-        <None Include="..\Coplt.Dropping.Analyzers\bin\Release\netstandard2.0\Coplt.Dropping.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
     </ItemGroup>
 
 </Project>

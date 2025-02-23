@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Coplt.Analyzers.Utilities;
 
-namespace Coplt.Dropping.Analyzers.Generators.Templates;
+namespace Coplt.Analyzers.Generators.Templates;
 
 public record struct DroppingAttr(bool Inherit, bool Unmanaged);
 public record struct DropAttr(int Order, bool Unmanaged);

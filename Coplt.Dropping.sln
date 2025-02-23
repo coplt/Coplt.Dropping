@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coplt.Dropping.Analyzers", "Coplt.Dropping.Analyzers\Coplt.Dropping.Analyzers.csproj", "{CA1A8AC6-3C8D-49F0-87D7-39AEC5D37A7E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coplt.Dropping.Source", "Coplt.Dropping.Source\Coplt.Dropping.Source.csproj", "{ED2CB0A7-DB5C-45DE-8154-BC84C2BBF6AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{CA1A8AC6-3C8D-49F0-87D7-39AEC5D37A7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA1A8AC6-3C8D-49F0-87D7-39AEC5D37A7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA1A8AC6-3C8D-49F0-87D7-39AEC5D37A7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED2CB0A7-DB5C-45DE-8154-BC84C2BBF6AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED2CB0A7-DB5C-45DE-8154-BC84C2BBF6AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED2CB0A7-DB5C-45DE-8154-BC84C2BBF6AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED2CB0A7-DB5C-45DE-8154-BC84C2BBF6AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

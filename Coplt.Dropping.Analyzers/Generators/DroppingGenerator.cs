@@ -1,12 +1,12 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
 using Coplt.Analyzers.Utilities;
-using Coplt.Dropping.Analyzers.Generators.Templates;
+using Coplt.Analyzers.Generators.Templates;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Coplt.Dropping.Analyzers.Generators;
+namespace Coplt.Analyzers.Generators;
 
 [Generator]
 public class DroppingGenerator : IIncrementalGenerator
