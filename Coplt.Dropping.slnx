@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Coplt.Dropping.Analyzers/Coplt.Dropping.Analyzers.csproj" />
+  <Project Path="Coplt.Dropping.Source/Coplt.Dropping.Source.csproj" />
+  <Project Path="Coplt.Dropping/Coplt.Dropping.csproj" />
+  <Project Path="Tests/Tests.csproj" />
+</Solution>
