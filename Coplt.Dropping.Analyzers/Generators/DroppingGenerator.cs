@@ -23,32 +23,22 @@ public class DroppingGenerator : IIncrementalGenerator
                 var attr = ctx.Attributes.First();
                 var syntax = (TypeDeclarationSyntax)ctx.TargetNode;
                 var symbol = (INamedTypeSymbol)ctx.TargetSymbol;
-                var nullable = ctx.SemanticModel.Compilation.Options.NullableContextOptions;
-                var rawFullName = symbol.ToDisplayString();
-                var nameWraps = symbol.WrapNames();
-                var nameWrap = symbol.WrapName();
-
-                var usings = new HashSet<string>();
-                Utils.GetUsings(syntax, usings);
-                var genBase = new GenBase(rawFullName, nullable, usings, nameWraps, nameWrap);
-
+                var genBase = Utils.BuildGenBase(syntax, symbol, ctx.SemanticModel.Compilation);
                 var can_inherit = symbol is { IsValueType: false, IsSealed: false };
 
-                var dropping_attr = new DroppingAttr(can_inherit, false);
+                var dropping_attr = new DroppingAttr(can_inherit, DropFrom.Always);
                 {
                     foreach (var kv in attr.NamedArguments)
                     {
                         if (kv is { Key: "AllowInherit", Value.Value: false }) dropping_attr.Inherit = false;
-                        else if (kv is { Key: "Unmanaged", Value.Value: true }) dropping_attr.Unmanaged = true;
+                        else if (kv is { Key: "From", Value.Value: var drop_from }) dropping_attr.From = (DropFrom)drop_from!;
                     }
                 }
 
                 var members = symbol.GetMembers()
-                    .Where(static m => m is (IMethodSymbol or IPropertySymbol or IFieldSymbol) and
-                        { CanBeReferencedByName: true })
-                    .Select(m =>
+                    .Select((m, i) =>
                     {
-                        var drop_attr = new DropAttr(0, dropping_attr.Unmanaged);
+                        var drop_attr = new DropAttr(0, dropping_attr.From);
                         var attrs = m.GetAttributes();
                         foreach (var attr in attrs)
                         {
@@ -56,8 +46,8 @@ public class DroppingGenerator : IIncrementalGenerator
                             foreach (var kv in attr.NamedArguments)
                             {
                                 if (kv is { Key: "Order", Value.Value: int Order }) drop_attr.Order = Order;
-                                else if (kv is { Key: "Unmanaged", Value.Value: bool Unmanaged })
-                                    drop_attr.Unmanaged = Unmanaged;
+                                else if (kv is { Key: "From", Value.Value: var drop_from })
+                                    drop_attr.From = (DropFrom)drop_from!;
                             }
                             goto find;
                         }
@@ -81,16 +71,18 @@ public class DroppingGenerator : IIncrementalGenerator
 
                         var nullable = m switch
                         {
-                            IPropertySymbol a => a.NullableAnnotation is not NullableAnnotation.NotAnnotated,
-                            IFieldSymbol a => a.NullableAnnotation is not NullableAnnotation.NotAnnotated,
+                            IPropertySymbol a => !a.Type.IsValueType || a.NullableAnnotation is not NullableAnnotation.NotAnnotated,
+                            IFieldSymbol a => !a.Type.IsValueType || a.NullableAnnotation is not NullableAnnotation.NotAnnotated,
                             _ => false,
                         };
 
-                        return new MemberInfo(member_type, m.Name, m.IsStatic, drop_attr, disposing, nullable);
+                        return new MemberInfo(member_type, m.Name, m.IsStatic, drop_attr, disposing, nullable, i);
                     })
                     .Where(static a => a.HasValue)
                     .Select(static a => a!.Value)
                     .OrderBy(static a => a.attr.Order)
+                    .ThenBy(static a => a.type is MemberType.Method ? 0 : 1)
+                    .ThenBy(static a => a.type is MemberType.Method ? a.DeclOrder : int.MaxValue - a.DeclOrder)
                     .ToImmutableArray();
 
                 Accessibility? BaseDispose = null;

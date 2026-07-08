@@ -4,8 +4,17 @@ using Coplt.Analyzers.Utilities;
 
 namespace Coplt.Analyzers.Generators.Templates;
 
-public record struct DroppingAttr(bool Inherit, bool Unmanaged);
-public record struct DropAttr(int Order, bool Unmanaged);
+[Flags]
+public enum DropFrom
+{
+    None = 0,
+    Dispose = 1 << 0,
+    Finalizer = 1 << 1,
+    Always = Dispose | Finalizer,
+}
+
+public record struct DroppingAttr(bool Inherit, DropFrom From);
+public record struct DropAttr(int Order, DropFrom From);
 
 public record struct TargetInfo(
     DroppingAttr attr,
@@ -21,7 +30,7 @@ public enum MemberType
     Method,
 }
 
-public record struct MemberInfo(MemberType type, string name, bool Static, DropAttr attr, bool disposing, bool nullable);
+public record struct MemberInfo(MemberType type, string name, bool Static, DropAttr attr, bool disposing, bool nullable, int DeclOrder);
 
 public class DroppingTemplate(GenBase GenBase, string name, TargetInfo info) : ATemplate(GenBase)
 {
@@ -33,7 +42,7 @@ public class DroppingTemplate(GenBase GenBase, string name, TargetInfo info) : A
 
         var no_base = info.BaseDispose is null;
 
-        var any_unmanaged = info.members.Any(m => m.attr.Unmanaged);
+        var any_unmanaged = info.members.Any(m => (m.attr.From & DropFrom.Finalizer) != 0);
         var any_disposing = info.members.Any(m => m.disposing);
 
         var finalizer = !info.Struct && no_base && (info.attr.Inherit || any_unmanaged);
@@ -53,7 +62,12 @@ public class DroppingTemplate(GenBase GenBase, string name, TargetInfo info) : A
             sb.AppendLine($"    {{");
             foreach (var member in info.members)
             {
-                var cond = member.disposing || member.attr.Unmanaged ? "" : $"if (disposing) ";
+                var cond = (member.disposing, member.attr.From) switch
+                {
+                    (true, _) or (false, DropFrom.Dispose) => $"if (disposing) ",
+                    (false, DropFrom.Finalizer) => $"if (!disposing) ",
+                    _ => "",
+                };
                 var disposing = member.disposing ? "disposing" : "";
                 var this_disposing = member.disposing ? ", disposing" : "";
                 var nullable = member.nullable ? "?" : "";
