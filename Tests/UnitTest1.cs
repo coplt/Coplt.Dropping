@@ -73,6 +73,46 @@ public partial struct Foo7
 }
 
 [Dropping]
+public partial class Foo8 : Foo1
+{
+    [Drop]
+    public void Drop1()
+    {
+        Console.WriteLine(1);
+    }
+}
+
+[Dropping]
+public sealed partial class Foo9
+{
+    [Drop]
+    public void Drop()
+    {
+        Console.WriteLine(1);
+    }
+}
+
+[Dropping(From = DropFrom.Dispose)]
+public sealed partial class Foo10
+{
+    [Drop]
+    public void Drop()
+    {
+        Console.WriteLine(1);
+    }
+}
+
+[Dropping(From = DropFrom.Finalizer)]
+public sealed partial class Foo11
+{
+    [Drop]
+    public void Drop()
+    {
+        Console.WriteLine(1);
+    }
+}
+
+[Dropping]
 public partial class Bar1
 {
     [Drop]

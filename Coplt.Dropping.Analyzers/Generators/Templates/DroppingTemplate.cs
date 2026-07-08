@@ -42,16 +42,18 @@ public class DroppingTemplate(GenBase GenBase, string name, TargetInfo info) : A
 
         var no_base = info.BaseDispose is null;
 
-        var any_unmanaged = info.members.Any(m => (m.attr.From & DropFrom.Finalizer) != 0);
+        var any_finalizer = info.members.Any(m => (m.attr.From & DropFrom.Finalizer) != 0);
+        var any_dispose = info.members.Any(m => (m.attr.From & DropFrom.Dispose) != 0);
+        var any_finalizer_only = info.members.Any(m => m.attr.From == DropFrom.Finalizer);
         var any_disposing = info.members.Any(m => m.disposing);
 
-        var finalizer = !info.Struct && no_base && (info.attr.Inherit || any_unmanaged);
+        var finalizer = !info.Struct && no_base && (info.attr.Inherit || any_finalizer);
 
         var disposing_acc = info.BaseDispose?.GetAccessStr() ?? (info.attr.Inherit ? "protected" : "private");
 
         var virtual_override = info.attr.Inherit ? no_base ? " virtual" : " override" : "";
 
-        var should_disposing = !info.Struct && (info.attr.Inherit || any_disposing);
+        var should_disposing = !info.Struct && (info.attr.Inherit || any_disposing || any_finalizer_only);
 
         #region Dispose bool
 
